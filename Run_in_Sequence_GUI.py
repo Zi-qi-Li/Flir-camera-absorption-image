@@ -245,7 +245,8 @@ class MyWindow(QtWidgets.QMainWindow):
                 self.atom=self.camera.get_image(self.camera.image_cnt-2)
                 self.od=-np.log((self.atom-self.background)/(self.no_atom-self.background),dtype=np.float16)
             
-                self.image.plt_result(self.background,self.no_atom,self.atom,self.od)
+                self.image.plt_result(self.background,self.no_atom,self.atom,self.od,
+                                      self.param.XMIN,self.param.XMAX,self.param.YMIN,self.param.YMAX)
                 self.image.save_figure(self.camera.path+'result_%d'%(self.camera.image_cnt//3))
                 
                 self.pm=QtGui.QPixmap(self.camera.path+'result_%d'%(self.camera.image_cnt//3))

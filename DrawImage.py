@@ -37,35 +37,43 @@ class Plt_Result:
         #plt.ioff()
         self.figure=plt.figure(figsize=(15,10))
     
-    def plt_result(self,background,no_atom,atom,od):
+    def plt_result(self,background,no_atom,atom,od,xmin,xmax,ymin,ymax):
         self.figure.clear()
 
-        nsteps=3 # Draw the figure every nsteps pixels. This makes it much faster.
+        nxsteps = (xmax-xmin)//400 # Draw the figure every nsteps pixels. This makes it much faster.
+        if nxsteps<=0:
+            nxsteps = 1
 
-        ny=len(background)
-        nx=len(background[0])
-        xlist=np.linspace(1,nx,nx)
-        ylist=np.linspace(1,ny,ny)
+        nysteps = (ymax-ymin)//400
+        if nysteps<=0:
+            nysteps = 1
+
+        print('nxsteps = %d, nysteps = %d'%(nxsteps,nysteps))
+        xlist=np.linspace(xmin+1,xmax,xmax-xmin)
+        ylist=np.linspace(ymin+1,ymax,ymax-ymin)
         
-
+        c=xlist[::nxsteps]
+        b=ylist[::nysteps]
+        a=background[ymin:ymax:nysteps,xmin:xmax:nxsteps]
+        
         sub1 = self.figure.add_subplot(221)
-        im1=sub1.pcolormesh(xlist[::nsteps],ylist[::nsteps],background[::nsteps,::nsteps])
+        im1=sub1.pcolormesh(xlist[::nxsteps],ylist[::nysteps],background[ymin:ymax:nysteps,xmin:xmax:nxsteps])
         sub1.set_title('background')
         self.figure.colorbar(im1,ax=sub1)
 
 
         sub2 = self.figure.add_subplot(222)
-        im2=sub2.pcolormesh(xlist[::nsteps],ylist[::nsteps],no_atom[::nsteps,::nsteps])
+        im2=sub2.pcolormesh(xlist[::nxsteps],ylist[::nysteps],no_atom[ymin:ymax:nysteps,xmin:xmax:nxsteps])
         sub2.set_title('no atom')
         self.figure.colorbar(im2,ax=sub2)
         
         sub3 = self.figure.add_subplot(223)
-        im3=sub3.pcolormesh(xlist[::nsteps],ylist[::nsteps],atom[::nsteps,::nsteps])
+        im3=sub3.pcolormesh(xlist[::nxsteps],ylist[::nysteps],atom[ymin:ymax:nysteps,xmin:xmax:nxsteps])
         sub3.set_title('atom')
         self.figure.colorbar(im3,ax=sub3)
         
         sub4 = self.figure.add_subplot(224)
-        im4=sub4.pcolormesh(xlist[::nsteps],ylist[::nsteps],od[::nsteps,::nsteps])
+        im4=sub4.pcolormesh(xlist[::nxsteps],ylist[::nysteps],od[ymin:ymax:nysteps,xmin:xmax:nxsteps])
         sub4.set_title('optical density')
         self.figure.colorbar(im4,ax=sub4)
         print('Plot result')
