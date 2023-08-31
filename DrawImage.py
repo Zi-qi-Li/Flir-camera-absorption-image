@@ -71,8 +71,8 @@ class Plt_Result:
         print('Plot result')
 
 
-    def show_figure(self):
-        self.figure.show()
+    #def show_figure(self):
+    #    self.figure.show()
 
     def save_figure(self,filename):
         self.figure.savefig(filename+".png")

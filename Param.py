@@ -7,9 +7,10 @@ class Param:
         self.path=".\\param\\"
         self.GAIN=10.6
         self.XMIN=0
-        self.XMAX=3071
+        self.XMAX=3072
         self.YMIN=0
-        self.YMAX=2047
+        self.YMAX=2048
+        self.EXPOSURE=100
 
         try:
             test_file = open(self.path+"test.txt", 'w+')
@@ -17,8 +18,6 @@ class Param:
             os.remove(test_file.name)
         except IOError:
             os.makedirs(self.path)
-            
-        
 
     def load_param(self,filename):
         try:
@@ -30,6 +29,7 @@ class Param:
             self.XMAX=param.XMAX
             self.YMIN=param.YMIN
             self.YMAX=param.YMAX
+            self.EXPOSURE=param.EXPOSURE
         except:
             pass
 

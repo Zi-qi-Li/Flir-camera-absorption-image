@@ -1,0 +1,6 @@
+image/
+test/
+param/
+__pycache__/
+*test*.py
+

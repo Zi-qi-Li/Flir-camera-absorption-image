@@ -332,7 +332,7 @@ class Camera:
 
     def set_exposure_time(self,time):
         try:
-            if time<=0 or time >200:
+            if time<=0 or time >5000:
                 return False
             if self.cam.ExposureAuto.GetAccessMode() != PySpin.RW:
                 print('Unable to disable automatic exposure. Aborting...')
@@ -352,7 +352,7 @@ class Camera:
                 print('Unable to set exposure time. Aborting...')
                 return False
             # Ensure desired exposure time does not exceed the maximum
-            exposure_time_to_set = min(time, 200)
+            exposure_time_to_set = min(time, 5000)
             self.cam.ExposureTime.SetValue(exposure_time_to_set)
             print('Exposure time set to %s us...' % exposure_time_to_set)
         except PySpin.SpinnakerException as ex:

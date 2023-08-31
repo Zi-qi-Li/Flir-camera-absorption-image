@@ -3,8 +3,6 @@ import Camera
 import DrawImage
 import Param
 import sys
-#from threading import Thread
-
 from PyQt5 import QtCore, QtWidgets, QtGui
 
 class MyWindow(QtWidgets.QMainWindow):
@@ -30,6 +28,7 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.camera.set_gain(self.param.GAIN) # set gain to 10.6 db
         #self.camera.auto_gain() # set gain to auto
+        self.camera.set_exposure_time(self.param.EXPOSURE) # set exposure time to 100 us
         
         self.camera.start_acquisition()
         
@@ -39,7 +38,7 @@ class MyWindow(QtWidgets.QMainWindow):
     def init_UI(self):
         # Setup window
         self.setWindowTitle("image")
-        self.setGeometry(300,100,2100,1100)  #(300,100,400,300)
+        self.setGeometry(200,200,2200,1100)  #(300,100,400,300)
 
         # Set image
         self.status=QtWidgets.QLabel("",self)
@@ -62,83 +61,106 @@ class MyWindow(QtWidgets.QMainWindow):
         self.lb_gain=QtWidgets.QLabel("Gain (db):",self)
         self.lb_gain.resize(150,50)
         self.lb_gain.setScaledContents(True)
-        self.lb_gain.move(1550,150)
+        self.lb_gain.move(1550,50)
 
         self.btn1=QtWidgets.QPushButton("set Gain",self)
         self.btn1.clicked.connect(self.set_gain)
-        self.btn1.resize(150,50)
-        self.btn1.move(1850,150)
+        self.btn1.resize(200,50)
+        self.btn1.move(1900,50)
         
         self.edit_Gain=QtWidgets.QLineEdit(self)
-        self.edit_Gain.resize(120,30)
-        self.edit_Gain.move(1700,160)
+        self.edit_Gain.resize(100,30)
+        self.edit_Gain.move(1750,60)
         self.edit_Gain.setText('%s' % self.param.GAIN)
 
         self.lb_gain_info=QtWidgets.QLabel("Set Gain to %s db" % self.param.GAIN,self)
         self.lb_gain_info.resize(450,50)
         self.lb_gain_info.setScaledContents(True)
-        self.lb_gain_info.move(1550,220)
+        self.lb_gain_info.move(1550,120)
+
+        # set Exposure Time
+        self.lb_exposure=QtWidgets.QLabel("Exposure (us):",self)
+        self.lb_exposure.resize(200,50)
+        self.lb_exposure.setScaledContents(True)
+        self.lb_exposure.move(1550,250)
+
+        self.btn_exposure=QtWidgets.QPushButton("set Exposure",self)
+        self.btn_exposure.clicked.connect(self.set_exposure)
+        self.btn_exposure.resize(200,50)
+        self.btn_exposure.move(1900,250)
+        
+        self.edit_exposure=QtWidgets.QLineEdit(self)
+        self.edit_exposure.resize(100,30)
+        self.edit_exposure.move(1750,260)
+        self.edit_exposure.setText('%s' % self.param.EXPOSURE)
+
+        self.lb_exposure_info=QtWidgets.QLabel("Set Exposure Time to %s us" % self.param.EXPOSURE,self)
+        self.lb_exposure_info.resize(450,50)
+        self.lb_exposure_info.setScaledContents(True)
+        self.lb_exposure_info.move(1550,320)
         
         
         # Set X Y
         self.lb_Xmin=QtWidgets.QLabel("Xmin:",self)
-        self.lb_Xmin.resize(150,30)
+        self.lb_Xmin.resize(170,30)
         self.lb_Xmin.setScaledContents(True)
-        self.lb_Xmin.move(1550,400)
+        self.lb_Xmin.move(1550,500)
         
         self.edit_Xmin=QtWidgets.QLineEdit(self)
         self.edit_Xmin.setText('%s' % self.param.XMIN)
         self.edit_Xmin.resize(70,30)
-        self.edit_Xmin.move(1650,400)
+        self.edit_Xmin.move(1650,500)
         
         self.lb_Xmax=QtWidgets.QLabel("Xmax:",self)
-        self.lb_Xmax.resize(150,30)
+        self.lb_Xmax.resize(170,30)
         self.lb_Xmax.setScaledContents(True)
-        self.lb_Xmax.move(1800,400)
+        self.lb_Xmax.move(1800,500)
 
         self.edit_Xmax=QtWidgets.QLineEdit(self)
         self.edit_Xmax.setText('%s' % self.param.XMAX)
         self.edit_Xmax.resize(70,30)
-        self.edit_Xmax.move(1900,400)
+        self.edit_Xmax.move(1900,500)
 
         self.lb_Ymin=QtWidgets.QLabel("Ymin:",self)
-        self.lb_Ymin.resize(150,30)
+        self.lb_Ymin.resize(170,30)
         self.lb_Ymin.setScaledContents(True)
-        self.lb_Ymin.move(1550,500)
+        self.lb_Ymin.move(1550,600)
 
         self.edit_Ymin=QtWidgets.QLineEdit(self)
         self.edit_Ymin.setText('%s' % self.param.YMIN)
         self.edit_Ymin.resize(70,30)
-        self.edit_Ymin.move(1650,500)
+        self.edit_Ymin.move(1650,600)
         
         self.lb_Ymax=QtWidgets.QLabel("Ymax:",self)
-        self.lb_Ymax.resize(150,30)
+        self.lb_Ymax.resize(170,30)
         self.lb_Ymax.setScaledContents(True)
-        self.lb_Ymax.move(1800,500)
+        self.lb_Ymax.move(1800,600)
 
         self.edit_Ymax=QtWidgets.QLineEdit(self)
         self.edit_Ymax.setText('%s' % self.param.YMAX)
         self.edit_Ymax.resize(70,30)
-        self.edit_Ymax.move(1900,500)
+        self.edit_Ymax.move(1900,600)
 
         self.btn2=QtWidgets.QPushButton("calculate OD",self)
         self.btn2.clicked.connect(self.calculate_od)
         self.btn2.resize(450,50)
-        self.btn2.move(1550,600)
+        self.btn2.move(1550,700)
 
         self.cal_result=QtWidgets.QLabel("",self)
         self.cal_result.resize(450,30)
         self.cal_result.setScaledContents(True)
-        self.cal_result.move(1550,700)
-        
+        self.cal_result.move(1550,800)
+
+
     def set_gain(self):
         try:
             str=self.edit_Gain.text()
             gain=float(str)
-            if gain > 0 and gain < 47.99:
+            if gain >= 0 and gain < 47.99:
                 self.camera.end_acquisition()
                 self.camera.set_gain(gain)
                 self.lb_gain_info.setText('Set Gain to %s db' % gain)
+                self.param.GAIN=gain
                 self.camera.start_acquisition()
                 
         except:
@@ -146,13 +168,32 @@ class MyWindow(QtWidgets.QMainWindow):
                 self.camera.auto_gain()
                 self.lb_gain_info.setText('Set Gain to Auto')
 
+    def set_exposure(self):
+        try:
+            str=self.edit_exposure.text()
+            exposure=int(str)
+            if exposure >= 0 and exposure <= 5000:
+                self.camera.end_acquisition()
+                self.camera.set_exposure_time(exposure)
+                self.lb_exposure_info.setText('Set Exposure Time to %s us' % exposure)
+                self.param.EXPOSURE=exposure
+                self.camera.start_acquisition()
+                
+        except:
+            if str=='auto' or str=='Auto':
+                self.camera.auto_gain()
+                self.lb_gain_info.setText('Set Gain to Auto')
+
+
     def check_x(self,x):
-        if x>=self.camera.image_width or x<0:
+        if x>self.camera.image_width or x<0:
             raise Exception('Wrong X')
-    
+
+
     def check_y(self,y):
-        if y>=self.camera.image_height or y<0:
+        if y>self.camera.image_height or y<0:
             raise Exception('Wrong X')
+
 
     def calculate_od(self):
         try:
@@ -185,6 +226,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.camera.release_camera()
         event.accept()
 
+
     def aquire_image(self):
 
         try:
@@ -201,7 +243,7 @@ class MyWindow(QtWidgets.QMainWindow):
                 self.background=self.camera.get_image(self.camera.image_cnt)
                 self.no_atom=self.camera.get_image(self.camera.image_cnt-1)
                 self.atom=self.camera.get_image(self.camera.image_cnt-2)
-                self.od=-np.log((self.atom-self.background)/(self.no_atom-self.background),dtype=np.float32)
+                self.od=-np.log((self.atom-self.background)/(self.no_atom-self.background),dtype=np.float16)
             
                 self.image.plt_result(self.background,self.no_atom,self.atom,self.od)
                 self.image.save_figure(self.camera.path+'result_%d'%(self.camera.image_cnt//3))
@@ -235,6 +277,7 @@ class MyWindow(QtWidgets.QMainWindow):
             '''
 
         return True
+
 
 if __name__ == "__main__":
     try:

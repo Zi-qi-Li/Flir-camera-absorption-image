@@ -2,7 +2,7 @@ import numpy as np
 import Camera
 import DrawImage
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+'''from PyQt5 import QtCore, QtWidgets, QtGui
 
 class MyWindow(QtWidgets.QMainWindow):
     def __init__(self,Update_Func,Close_Func):
@@ -26,7 +26,7 @@ class MyWindow(QtWidgets.QMainWindow):
     def closeEvent(self,event):
         self.timer.stop()
         self.myClose()
-        event.accept()
+        event.accept()'''
 
 def aquire_image():
     try:
