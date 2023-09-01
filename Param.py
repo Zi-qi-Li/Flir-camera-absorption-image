@@ -3,14 +3,23 @@ import os
 
 class Param:
     def __init__(self):
-        # params
         self.path=".\\param\\"
+
+        # params
         self.GAIN=10.6
+        self.EXPOSURE=100
+        
         self.XMIN=0
         self.XMAX=3072
         self.YMIN=0
         self.YMAX=2048
-        self.EXPOSURE=100
+
+        self.DIS_XMIN=0
+        self.DIS_XMAX=3072
+        self.DIS_YMIN=0
+        self.DIS_YMAX=2048
+        
+        self.CURRENT_IMAGE_PATH=os.getcwd()+".\\"
 
         try:
             test_file = open(self.path+"test.txt", 'w+')
@@ -25,11 +34,20 @@ class Param:
             with open(filename, 'rb') as file:
                 param = pickle.loads(file.read())
             self.GAIN=param.GAIN
+            self.EXPOSURE=param.EXPOSURE
+            
             self.XMIN=param.XMIN
             self.XMAX=param.XMAX
             self.YMIN=param.YMIN
             self.YMAX=param.YMAX
-            self.EXPOSURE=param.EXPOSURE
+
+            self.DIS_XMIN=param.DIS_XMIN
+            self.DIS_XMAX=param.DIS_XMAX
+            self.DIS_YMIN=param.DIS_YMIN
+            self.DIS_YMAX=param.DIS_YMAX
+            
+            self.CURRENT_IMAGE_PATH=param.CURRENT_IMAGE_PATH
+            
         except:
             pass
 

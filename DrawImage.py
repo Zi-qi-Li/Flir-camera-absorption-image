@@ -52,9 +52,9 @@ class Plt_Result:
         xlist=np.linspace(xmin+1,xmax,xmax-xmin)
         ylist=np.linspace(ymin+1,ymax,ymax-ymin)
         
-        c=xlist[::nxsteps]
-        b=ylist[::nysteps]
-        a=background[ymin:ymax:nysteps,xmin:xmax:nxsteps]
+        #c=xlist[::nxsteps]
+        #b=ylist[::nysteps]
+        #a=background[ymin:ymax:nysteps,xmin:xmax:nxsteps]
         
         sub1 = self.figure.add_subplot(221)
         im1=sub1.pcolormesh(xlist[::nxsteps],ylist[::nysteps],background[ymin:ymax:nysteps,xmin:xmax:nxsteps])
@@ -82,12 +82,37 @@ class Plt_Result:
     #def show_figure(self):
     #    self.figure.show()
 
+    def plt_od(self,od,xmin,xmax,ymin,ymax):
+        self.figure.clear()
+        sub = self.figure.add_subplot(111)
+        
+        
+        nxsteps = (xmax-xmin)//600 # Draw the figure every nsteps pixels. This makes it much faster.
+        if nxsteps<=0:
+            nxsteps = 1
+
+        nysteps = (ymax-ymin)//600
+        if nysteps<=0:
+            nysteps = 1
+
+        #print('nxsteps = %d, nysteps = %d'%(nxsteps,nysteps))
+
+        xlist=np.linspace(xmin+1,xmax,xmax-xmin)
+        ylist=np.linspace(ymin+1,ymax,ymax-ymin)
+        im1=sub.pcolormesh(xlist[::nxsteps],ylist[::nysteps],od[ymin:ymax:nysteps,xmin:xmax:nxsteps])
+        sub.set_title('optical density')
+        self.figure.colorbar(im1,ax=sub)
+
+
     def save_figure(self,filename):
         self.figure.savefig(filename+".png")
-        print('Saved figure as %s' % (filename+".png"))
+        #print('Saved figure as %s' % (filename+".png"))
 
     def clear(self):
         self.figure.clear()
+
+    def release(self):
+        pass
     
 
 if __name__ == "__main__":

@@ -2,31 +2,6 @@ import numpy as np
 import Camera
 import DrawImage
 
-'''from PyQt5 import QtCore, QtWidgets, QtGui
-
-class MyWindow(QtWidgets.QMainWindow):
-    def __init__(self,Update_Func,Close_Func):
-        super().__init__()
-
-        self.myUpdate=Update_Func
-        self.myClose=Close_Func
-
-        # Setup timer
-        self.timer=QtCore.QTimer()
-        self.timer.timeout.connect(self.update_func)
-        self.timer.start(5)
-
-        # Setup window
-        self.setWindowTitle("image")
-        self.setGeometry(300,100,1500,1000)  #(300,100,400,300)
-    
-    def update_func(self):
-        self.myUpdate()
-
-    def closeEvent(self,event):
-        self.timer.stop()
-        self.myClose()
-        event.accept()'''
 
 def aquire_image():
     try:
@@ -50,9 +25,6 @@ def aquire_image():
         except Exception as ex:
             print('Error: %s' % ex)
             return False
-        
-        
-
 
         '''
         # Save original data

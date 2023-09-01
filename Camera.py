@@ -618,7 +618,7 @@ class Camera:
         return "Acquisition_%d" % index
 
 
-    def save_data(self,outputname,index=-1):
+    '''def save_data(self,outputname,index=-1):
         #  Save image
         #
         #  *** NOTES ***
@@ -630,7 +630,7 @@ class Camera:
         else:
             np.save(self.path+outputname,self.image[(index-1)%3][:][:])
         #self.image.Save(self.path + filename)
-        print('Data saved at %s' % (self.path + outputname + '.npy'))
+        print('Data saved at %s' % (self.path + outputname + '.npy'))'''
 
 
     def get_image(self,index=-1):
