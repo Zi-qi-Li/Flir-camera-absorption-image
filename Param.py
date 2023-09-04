@@ -3,7 +3,7 @@ import os
 
 class Param:
     def __init__(self):
-        self.path=".\\param\\"
+        self.path=os.getcwd()+"/param/"
 
         # params
         self.GAIN=10.6
@@ -19,7 +19,8 @@ class Param:
         self.DIS_YMIN=0
         self.DIS_YMAX=2048
         
-        self.CURRENT_IMAGE_PATH=os.getcwd()+".\\"
+        self.CURRENT_IMAGE_PATH=os.getcwd()+"/"
+        self.IMAGE_SAVING_PATH=os.getcwd()+"/"
 
         try:
             test_file = open(self.path+"test.txt", 'w+')
@@ -29,6 +30,7 @@ class Param:
             os.makedirs(self.path)
 
     def load_param(self,filename):
+        # Try to load previous parameters. If fail, use default parameters
         try:
             #param=np.load(filename,allow_pickle=True)
             with open(filename, 'rb') as file:
@@ -47,6 +49,8 @@ class Param:
             self.DIS_YMAX=param.DIS_YMAX
             
             self.CURRENT_IMAGE_PATH=param.CURRENT_IMAGE_PATH
+            self.IMAGE_SAVING_PATH=param.IMAGE_SAVING_PATH
+            pass
             
         except:
             pass

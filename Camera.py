@@ -9,7 +9,7 @@ class Camera:
         # Set path where images are saved
         print("\n*** INITIALIZING CAMERA ***")
         
-        self.path=".\\image\\"
+        self.path=os.getcwd()+"/image/"
         if  not self.check_path():
             os.makedirs(self.path)
             print('Makedirs :%s' % self.path)
