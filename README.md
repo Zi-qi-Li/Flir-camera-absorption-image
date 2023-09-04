@@ -26,10 +26,3 @@ Xmin, Xmax: 0 - 3072
 
 Ymin, Ymax: 0 - 2048
 
-## Need to Do
-display X
-calculate X
-
-save figure using date
-save OD only
-save image with given name
