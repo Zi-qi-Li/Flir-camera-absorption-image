@@ -159,14 +159,14 @@ class MyWindow(QtWidgets.QMainWindow):
         
         self.log=QtWidgets.QTextBrowser(self)
         self.log.resize(600,300)
-        self.log.move(1520,850)
+        self.log.move(1520,820)
         
         #self.info=QtWidgets.QLabel("",self)
         #self.info.resize(1500,100)
         #self.info.setScaledContents(True)
         #self.info.move(50,1100)
 
-        self.lbl=QtWidgets.QLabel("",self)
+        self.lbl=QtWidgets.QLabel("\n   Waiting for image...",self)
         self.lbl.resize(1500,1000)
         self.lbl.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
         self.lbl.setScaledContents(True)
@@ -340,23 +340,23 @@ class MyWindow(QtWidgets.QMainWindow):
         # select image and display
         self.btn_select=QtWidgets.QPushButton("Select",self)
         self.btn_select.clicked.connect(self.select_image)
-        self.btn_select.resize(120,40)
-        self.btn_select.move(50,45)
+        self.btn_select.resize(110,40)
+        self.btn_select.move(1200,45)
 
         self.edit_filename=QtWidgets.QLineEdit(self)
         self.edit_filename.setText(self.param.CURRENT_IMAGE_PATH)
         self.edit_filename.resize(1000,30)
-        self.edit_filename.move(185,50)
+        self.edit_filename.move(180,50)
 
         self.btn_load=QtWidgets.QPushButton("Load",self)
         self.btn_load.clicked.connect(self.load_image)
-        self.btn_load.resize(100,40)
-        self.btn_load.move(1200,45)
+        self.btn_load.resize(110,40)
+        self.btn_load.move(50,45)
 
         self.btn_save=QtWidgets.QPushButton("Save",self)
         self.btn_save.clicked.connect(self.save_image)
-        self.btn_save.resize(100,40)
-        self.btn_save.move(1300,45)
+        self.btn_save.resize(110,40)
+        self.btn_save.move(1320,45)
         
 
         # disable all the btn except btn_connect
@@ -533,8 +533,11 @@ class MyWindow(QtWidgets.QMainWindow):
             self.param.YMIN=ymin
             self.param.YMAX=ymax
             
-            total_od=np.sum(self.od[xmin:xmax,ymin:ymax])
-            #self.log.append('Optical density: %f' % total_od)
+            tmp=self.od[xmin:xmax,ymin:ymax]
+            tmp[np.isnan(tmp)]=0
+            tmp[np.isinf(tmp)]=0
+            total_od=np.sum(tmp,dtype=np.float32)
+            self.log.append('Optical density: %f' % total_od)
             self.cal_result.setText('Optical density: %f' % total_od)
         except Exception as ex:
             print('Fail to calculate OD: %s' % ex)
@@ -573,7 +576,7 @@ class MyWindow(QtWidgets.QMainWindow):
                 self.background=self.camera.get_image(self.camera.image_cnt)
                 self.no_atom=self.camera.get_image(self.camera.image_cnt-1)
                 self.atom=self.camera.get_image(self.camera.image_cnt-2)
-                self.od=-np.log((self.atom-self.background)/(self.no_atom-self.background),dtype=np.float16)
+                self.od=-np.log((self.atom-self.background)/(self.no_atom-self.background),dtype=np.float32)
             
                 '''self.image.plt_result(self.background,self.no_atom,self.atom,self.od,
                                       self.param.XMIN,self.param.XMAX,self.param.YMIN,self.param.YMAX)
