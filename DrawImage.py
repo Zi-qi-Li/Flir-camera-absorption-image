@@ -82,7 +82,7 @@ class Plt_Result:
     #def show_figure(self):
     #    self.figure.show()
 
-    def plt_od(self,od,xmin,xmax,ymin,ymax):
+    def plt_od(self,od,xmin,xmax,ymin,ymax,od_xmin,od_xmax,od_ymin,od_ymax):
         self.figure.clear()
         sub = self.figure.add_subplot(111)
         
@@ -97,9 +97,15 @@ class Plt_Result:
 
         #print('nxsteps = %d, nysteps = %d'%(nxsteps,nysteps))
 
+        # Draw colormap
         xlist=np.linspace(xmin+1,xmax,xmax-xmin)
         ylist=np.linspace(ymin+1,ymax,ymax-ymin)
         im1=sub.pcolormesh(xlist[::nxsteps],ylist[::nysteps],od[ymin:ymax:nysteps,xmin:xmax:nxsteps])
+        # Draw region to calculate OD
+        sub.plot([od_xmin,od_xmax],[od_ymax,od_ymax],color='black')
+        sub.plot([od_xmin,od_xmax],[od_ymin,od_ymin],color='black')
+        sub.plot([od_xmin,od_xmin],[od_ymin,od_ymax],color='black')
+        sub.plot([od_xmax,od_xmax],[od_ymin,od_ymax],color='black')
         sub.set_title('optical density')
         self.figure.colorbar(im1,ax=sub)
 

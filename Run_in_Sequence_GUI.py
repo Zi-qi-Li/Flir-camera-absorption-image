@@ -6,6 +6,7 @@ import sys
 import os
 from PyQt5 import QtCore, QtWidgets, QtGui
 import datetime
+import copy
 
 MAX_X_PIXEL=3072
 MAX_Y_PIXEL=2048
@@ -14,22 +15,18 @@ class MyWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         
+        # Bool object to check the status
         self.camera_connected=False
         self.acq_start=False
         self.image_displayed=False
 
+        # Object to draw image
         self.image=DrawImage.Plt_Result()
         
+        # Object to acquire image
         self.timer=QtCore.QTimer()
 
-        '''# Setup timer
-        self.timer=QtCore.QTimer()
-        self.timer.timeout.connect(self.aquire_image)
-        self.timer.start(5)'''
-
-        # self.camera=Camera.Camera()
-        
-        # params
+        # Object to save params
         self.param=Param.Param()
 
         self.param.load_param(self.param.path+'Param.plk')
@@ -44,8 +41,10 @@ class MyWindow(QtWidgets.QMainWindow):
         
         self.camera.start_acquisition()'''
         
+        # Init GUI
         self.init_UI()
 
+        # Try to connect camera, if there is no camera, do nothing.
         self.connect_camera()
 
     def connect_camera(self):
@@ -77,6 +76,7 @@ class MyWindow(QtWidgets.QMainWindow):
             self.log.append('Fail to connect camera: %s' % ex)
             #self.info.setText('Fail to connect camera')
 
+
     def disconnect_camera(self):
         if not self.camera_connected:
             self.log.append('Camera already disconnected')
@@ -100,7 +100,7 @@ class MyWindow(QtWidgets.QMainWindow):
         except Exception as ex:
             print('Fail to disconnect camera: %s' % ex)
             self.log.append('Fail to disconnect camera: %s' % ex)
-            
+
 
     def start_acquisition(self):
         if not self.camera_connected:
@@ -121,7 +121,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.log.append('Start acquisition')
         #self.info.setText('Start acquisition')
         self.timer.start(5)
-        
+
 
     def end_acquisition(self):
         if not self.camera_connected:
@@ -146,7 +146,7 @@ class MyWindow(QtWidgets.QMainWindow):
     def init_UI(self):
         # Setup window
         self.setWindowTitle("image")
-        self.setGeometry(100,100,2200,1200)  #(300,100,400,300)
+        self.setGeometry(100,100,2200,1150)  #(300,100,400,300)
 
         # Set image
         #self.status=QtWidgets.QLabel("",self)
@@ -157,6 +157,7 @@ class MyWindow(QtWidgets.QMainWindow):
         #self.status.setFont(QtGui.QFont("Times", 12))
         #self.status.move(0,0)
         
+        # This browser shows infomation of execution
         self.log=QtWidgets.QTextBrowser(self)
         self.log.resize(600,300)
         self.log.move(1520,820)
@@ -166,6 +167,7 @@ class MyWindow(QtWidgets.QMainWindow):
         #self.info.setScaledContents(True)
         #self.info.move(50,1100)
 
+        # Label to display Image
         self.lbl=QtWidgets.QLabel("\n   Waiting for image...",self)
         self.lbl.resize(1500,1000)
         self.lbl.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
@@ -262,7 +264,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.btn_display.resize(450,50)
         self.btn_display.move(1550,500)
 
-        # X Y for Calculate
+        # X Y for calculate OD
         self.lb_Xmin=QtWidgets.QLabel("Xmin:",self)
         self.lb_Xmin.resize(170,30)
         self.lb_Xmin.setScaledContents(True)
@@ -361,11 +363,12 @@ class MyWindow(QtWidgets.QMainWindow):
 
         # disable all the btn except btn_connect
         self.btn_gain.setDisabled(True)
-        # self.btn_cal.setDisabled(True)
         self.btn_exposure.setDisabled(True)
         self.btn_start.setDisabled(True)
         self.btn_end.setDisabled(True)
         self.btn_disconnect.setDisabled(True)
+        self.btn_cal.setDisabled(True)
+        self.btn_display.setDisabled(True)
 
 
     def set_gain(self):
@@ -387,6 +390,7 @@ class MyWindow(QtWidgets.QMainWindow):
                 #self.lb_gain_info.setText('Set Gain to Auto')
             else:
                 self.log.append('Fail to set Gain: %s'%ex)
+
 
     def set_exposure(self):
         try:
@@ -416,6 +420,7 @@ class MyWindow(QtWidgets.QMainWindow):
         if y>MAX_Y_PIXEL or y<0:
             raise Exception('Wrong X')
 
+
     def select_image(self):
         try:
             #path,name=os.path.split(self.edit_filename.text())
@@ -431,7 +436,8 @@ class MyWindow(QtWidgets.QMainWindow):
             self.log.append('Fail to select image: %s'%ex)
             #self.info.setText('Fail to select image')
             print('Fail to select image: %s'%ex)
-    
+
+
     def load_image(self):
         try:
             tmp=np.load(self.edit_filename.text())
@@ -451,6 +457,7 @@ class MyWindow(QtWidgets.QMainWindow):
             #self.info.setText('Fail to load image')
             print('Fail to load image: %s' % ex)
 
+
     def display(self):
         try:
             dis_xmin=int(self.edit_display_Xmin.text())
@@ -468,23 +475,28 @@ class MyWindow(QtWidgets.QMainWindow):
             self.param.DIS_XMAX=dis_xmax
             self.param.DIS_YMIN=dis_ymin
             self.param.DIS_YMAX=dis_ymax
-            
-            self.image.plt_od(self.od,dis_xmin,dis_xmax,dis_ymin,dis_ymax)
+
+            self.calculate_od()
+            self.image.plt_od(self.od,self.param.DIS_XMIN,self.param.DIS_XMAX,self.param.DIS_YMIN,self.param.DIS_YMAX,
+                              self.param.XMIN,self.param.XMAX,self.param.YMIN,self.param.YMAX)
             self.image.save_figure(self.param.path+'tmp')
             self.pm=QtGui.QPixmap(self.param.path+'tmp.png')
             self.lbl.setPixmap(self.pm)
             self.image_displayed=True
+            self.btn_display.setDisabled(False)
+            self.btn_cal.setDisabled(False)
             os.remove(self.param.path+'tmp.png')
 
             
             self.log.append('Display image successfully')
             
-            self.calculate_od()
+            
         except Exception as ex:
             self.log.append('Fail to display image: %s' % ex)
             #self.info.setText('Fail to display image')
             print('Fail to display image: %s' % ex)
             #print('Error: %s'%ex)
+
 
     def save_image(self):
         try:
@@ -506,6 +518,7 @@ class MyWindow(QtWidgets.QMainWindow):
             self.log.append('Fail to save image: %s' % ex)
             pass
 
+
     def save_image_auto(self):
         try:
             np.save(self.edit_filename.text(),self.od)
@@ -514,6 +527,7 @@ class MyWindow(QtWidgets.QMainWindow):
         except Exception as ex:
             self.log.append('Fail to save image: %s' % ex)
             pass
+
 
     def calculate_od(self):
         try:
@@ -533,17 +547,17 @@ class MyWindow(QtWidgets.QMainWindow):
             self.param.YMIN=ymin
             self.param.YMAX=ymax
             
-            tmp=self.od[xmin:xmax,ymin:ymax]
+            tmp=copy.deepcopy(self.od[ymin:ymax,xmin:xmax])
             tmp[np.isnan(tmp)]=0
             tmp[np.isinf(tmp)]=0
             total_od=np.sum(tmp,dtype=np.float32)
-            self.log.append('Optical density: %f' % total_od)
-            self.cal_result.setText('Optical density: %f' % total_od)
+            self.log.append('Optical density: %s' % total_od)
+            self.cal_result.setText('Optical density: %s' % total_od)
         except Exception as ex:
             print('Fail to calculate OD: %s' % ex)
             self.log.append('Fail to calculate OD: %s' % ex)
             self.cal_result.setText('Fail to calculate OD')
-        
+
 
     def closeEvent(self,event):
         #try:

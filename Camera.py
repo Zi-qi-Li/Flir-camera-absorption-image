@@ -1,7 +1,7 @@
 import os
 import PySpin
 import numpy as np
-import time
+#import time
 
 
 class Camera:
