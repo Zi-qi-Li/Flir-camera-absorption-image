@@ -3,6 +3,7 @@ from PIL import Image
 import sys
 import matplotlib
 matplotlib.use('agg')
+#matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 
 def convert_image(path,inputname,outputname):
@@ -116,6 +117,7 @@ class Plt_Result:
 
     def clear(self):
         self.figure.clear()
+
 
     def release(self):
         pass

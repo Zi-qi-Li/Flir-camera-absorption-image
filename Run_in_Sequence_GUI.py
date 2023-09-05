@@ -482,9 +482,10 @@ class MyWindow(QtWidgets.QMainWindow):
             self.image.save_figure(self.param.path+'tmp')
             self.pm=QtGui.QPixmap(self.param.path+'tmp.png')
             self.lbl.setPixmap(self.pm)
-            self.image_displayed=True
-            self.btn_display.setDisabled(False)
-            self.btn_cal.setDisabled(False)
+            if not self.image_displayed:
+                self.image_displayed=True
+                self.btn_display.setDisabled(False)
+                self.btn_cal.setDisabled(False)
             os.remove(self.param.path+'tmp.png')
 
             
@@ -497,6 +498,21 @@ class MyWindow(QtWidgets.QMainWindow):
             print('Fail to display image: %s' % ex)
             #print('Error: %s'%ex)
 
+    def refresh_image(self):
+        try:
+            self.image.plt_od(self.od,self.param.DIS_XMIN,self.param.DIS_XMAX,self.param.DIS_YMIN,self.param.DIS_YMAX,
+                              self.param.XMIN,self.param.XMAX,self.param.YMIN,self.param.YMAX)
+            self.image.save_figure(self.param.path+'tmp')
+            self.pm=QtGui.QPixmap(self.param.path+'tmp.png')
+            self.lbl.setPixmap(self.pm)
+            if not self.image_displayed:
+                self.image_displayed=True
+                self.btn_display.setDisabled(False)
+                self.btn_cal.setDisabled(False)
+            os.remove(self.param.path+'tmp.png')
+        except Exception as ex:
+            self.log.append('Fail to refresh image: %s'%ex)
+            print('Fail to refresh image: %s'%ex)
 
     def save_image(self):
         try:
@@ -551,6 +567,7 @@ class MyWindow(QtWidgets.QMainWindow):
             tmp[np.isnan(tmp)]=0
             tmp[np.isinf(tmp)]=0
             total_od=np.sum(tmp,dtype=np.float32)
+            self.refresh_image()
             self.log.append('Optical density: %s' % total_od)
             self.cal_result.setText('Optical density: %s' % total_od)
         except Exception as ex:
