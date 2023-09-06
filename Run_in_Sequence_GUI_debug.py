@@ -7,7 +7,7 @@ import os
 from PyQt5 import QtCore, QtWidgets, QtGui
 import datetime
 import copy
-#import time
+import time
 
 MAX_X_PIXEL=3072
 MAX_Y_PIXEL=2048
@@ -23,7 +23,7 @@ class MyWindow(QtWidgets.QMainWindow):
 
         # Object to draw image
         self.plt_image=DrawImage.QMatplotlib()
-        #self.image=DrawImage.Plt_Result()
+        self.image=DrawImage.Plt_Result()
         
         # Object to acquire image
         self.timer=QtCore.QTimer()
@@ -165,8 +165,8 @@ class MyWindow(QtWidgets.QMainWindow):
         #self.lbl.setText('Acquiring image...')
         #self.lbl.setFont(QtGui.QFont("Times", 12))
         self.lbl.move(0,100)
-        self.hboxlayout = QtWidgets.QHBoxLayout(self.lbl)
-        self.hboxlayout.addWidget(self.plt_image)
+        #self.hboxlayout = QtWidgets.QHBoxLayout(self.lbl)
+        #self.hboxlayout.addWidget(self.plt_image)
 
         # set Gain
         self.lb_gain=QtWidgets.QLabel("Gain (db):",self)
@@ -361,6 +361,10 @@ class MyWindow(QtWidgets.QMainWindow):
         self.btn_disconnect.setDisabled(True)
         self.btn_cal.setDisabled(True)
         self.btn_display.setDisabled(True)
+        
+        self.btn_save.setDisabled(True)
+        self.btn_select.setDisabled(True)
+        self.btn_load.setDisabled(True)
 
 
     def set_gain(self):
@@ -482,9 +486,10 @@ class MyWindow(QtWidgets.QMainWindow):
             self.param.DIS_YMIN=dis_ymin
             self.param.DIS_YMAX=dis_ymax
 
-            
+            '''
             self.plt_image.plt_image(self.od,self.param.DIS_XMIN,self.param.DIS_XMAX,self.param.DIS_YMIN,self.param.DIS_YMAX)
             self.calculate_od()
+            '''
 
             '''
             self.image.plt_od(self.od,self.param.DIS_XMIN,self.param.DIS_XMAX,self.param.DIS_YMIN,self.param.DIS_YMAX,
@@ -530,7 +535,7 @@ class MyWindow(QtWidgets.QMainWindow):
             self.edit_filename.setText(filename)
             self.log.append('Image saved successfully')
         except Exception as ex:
-            self.log.append('Fail to save image: %s' % ex)
+            self.log.append('Fail to save image: %s s' % ex)
             pass
 
 
@@ -566,10 +571,10 @@ class MyWindow(QtWidgets.QMainWindow):
             tmp[np.isnan(tmp)]=0
             tmp[np.isinf(tmp)]=0
             total_od=np.sum(tmp,dtype=np.float32)
-            self.plt_image.plt_od_region(self.param.XMIN,self.param.XMAX,self.param.YMIN,self.param.YMAX)
+            '''self.plt_image.plt_od_region(self.param.XMIN,self.param.XMAX,self.param.YMIN,self.param.YMAX)
             self.log.append('Optical density: %s' % total_od)
             self.cal_result.setText('Optical density: %s' % total_od)
-            self.plt_image.draw()
+            self.plt_image.draw()'''
         except Exception as ex:
             print('Fail to calculate OD: %s' % ex)
             self.log.append('Fail to calculate OD: %s' % ex)
@@ -594,8 +599,11 @@ class MyWindow(QtWidgets.QMainWindow):
     def aquire_image(self):
 
         try:
+            start_time=time.time()
             if not self.camera.acquire_single_image():
                 return False
+            end_time=time.time()
+            self.log.append('Aquisition time: %ss'%(end_time-start_time))
             self.log.append('Aquire image %d successfully' % self.camera.image_cnt)
         except Exception as ex:
             #print('Error: %s' % ex)
@@ -611,20 +619,21 @@ class MyWindow(QtWidgets.QMainWindow):
                 self.no_atom=self.camera.get_image(self.camera.image_cnt-1)
                 self.atom=self.camera.get_image(self.camera.image_cnt-2)
                 self.od=-np.log((self.atom-self.background)/(self.no_atom-self.background),dtype=np.float32)
-                '''
+            
                 self.image.plt_result(self.background,self.no_atom,self.atom,self.od,
                                       self.param.XMIN,self.param.XMAX,self.param.YMIN,self.param.YMAX)
-                self.image.save_figure(self.camera.path+'result_%d'%(self.camera.image_cnt//3))
-                
-                self.pm=QtGui.QPixmap(self.camera.path+'result_%d'%(self.camera.image_cnt//3))
-                self.lbl.setPixmap(self.pm)
-                #self.image_displayed=True
-                '''
                 auto_filename=datetime.datetime.now().strftime(r'%Y-%m-%d_%H-%M-%S')
-                self.edit_filename.setText(self.camera.path+auto_filename)
-                self.save_image_auto()
+                self.image.save_figure(self.camera.path+auto_filename)
+                
+                self.pm=QtGui.QPixmap(self.camera.path+auto_filename)
+                self.lbl.setPixmap(self.pm)
+                self.image_displayed=True
+
+                
+                #self.edit_filename.setText(self.camera.path+auto_filename)
+                #self.save_image_auto()
                 self.display()
-                self.log.append('Complete, save data as %s' % auto_filename + '.npy')
+                self.log.append('Complete, save data as %s' % auto_filename + '.png')
                 
 
                 #self.status.setText('result_%d'%(self.camera.image_cnt//3)+'.png')

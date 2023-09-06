@@ -3,8 +3,10 @@ from PIL import Image
 import sys
 import matplotlib
 matplotlib.use('agg')
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 #matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 
 def convert_image(path,inputname,outputname):
     image16=np.load(path+inputname+".npy")
@@ -57,7 +59,7 @@ class Plt_Result:
         #b=ylist[::nysteps]
         #a=background[ymin:ymax:nysteps,xmin:xmax:nxsteps]
         
-        sub1 = self.figure.add_subplot(221)
+        sub1 = self.figure.add_subplot(223)
         im1=sub1.pcolormesh(xlist[::nxsteps],ylist[::nysteps],background[ymin:ymax:nysteps,xmin:xmax:nxsteps])
         sub1.set_title('background')
         self.figure.colorbar(im1,ax=sub1)
@@ -68,7 +70,7 @@ class Plt_Result:
         sub2.set_title('no atom')
         self.figure.colorbar(im2,ax=sub2)
         
-        sub3 = self.figure.add_subplot(223)
+        sub3 = self.figure.add_subplot(221)
         im3=sub3.pcolormesh(xlist[::nxsteps],ylist[::nysteps],atom[ymin:ymax:nysteps,xmin:xmax:nxsteps])
         sub3.set_title('atom')
         self.figure.colorbar(im3,ax=sub3)
@@ -122,6 +124,53 @@ class Plt_Result:
     def release(self):
         pass
     
+class QMatplotlib(FigureCanvasQTAgg):
+    def __init__(self):
+        self.image=Figure(figsize=(15,10),dpi=100)
+        super(QMatplotlib,self).__init__(self.image)
+        
+
+    def plt_image(self,od,xmin,xmax,ymin,ymax):
+        self.image.clear()
+        self.axes=self.image.add_subplot(111)
+        nxsteps = (xmax-xmin)//600 # Draw the figure every nsteps pixels. This makes it much faster.
+        if nxsteps<=0:
+            nxsteps = 1
+
+        nysteps = (ymax-ymin)//600
+        if nysteps<=0:
+            nysteps = 1
+
+        #print('nxsteps = %d, nysteps = %d'%(nxsteps,nysteps))
+
+        # Draw colormap
+        xlist=np.linspace(xmin+1,xmax,xmax-xmin)
+        ylist=np.linspace(ymin+1,ymax,ymax-ymin)
+        im1=self.axes.pcolormesh(xlist[::nxsteps],ylist[::nysteps],od[ymin:ymax:nysteps,xmin:xmax:nxsteps])
+        
+        self.plt1,=self.axes.plot([],[],color='black')
+        self.plt2,=self.axes.plot([],[],color='black')
+        self.plt3,=self.axes.plot([],[],color='black')
+        self.plt4,=self.axes.plot([],[],color='black')
+
+
+        self.axes.set_title('optical density')
+        self.image.colorbar(im1,ax=self.axes)
+
+    def plt_od_region(self,od_xmin,od_xmax,od_ymin,od_ymax):
+        # Draw region to calculate OD
+        self.plt1.set_data([od_xmin,od_xmax],[od_ymax,od_ymax])
+        self.plt2.set_data([od_xmin,od_xmax],[od_ymin,od_ymin])
+        self.plt3.set_data([od_xmin,od_xmin],[od_ymin,od_ymax])
+        self.plt4.set_data([od_xmax,od_xmax],[od_ymin,od_ymax])
+        '''
+        self.axes.plot([od_xmin,od_xmax],[od_ymax,od_ymax],color='black')
+        self.axes.plot([od_xmin,od_xmax],[od_ymin,od_ymin],color='black')
+        self.axes.plot([od_xmin,od_xmin],[od_ymin,od_ymax],color='black')
+        self.axes.plot([od_xmax,od_xmax],[od_ymin,od_ymax],color='black')'''
+
+    def release(self):
+        self.image.clear()
 
 if __name__ == "__main__":
 

@@ -332,7 +332,7 @@ class Camera:
 
     def set_exposure_time(self,time):
         try:
-            if time<=0 or time >5000:
+            if time<=0:
                 return False
             if self.cam.ExposureAuto.GetAccessMode() != PySpin.RW:
                 print('Unable to disable automatic exposure. Aborting...')
@@ -352,7 +352,7 @@ class Camera:
                 print('Unable to set exposure time. Aborting...')
                 return False
             # Ensure desired exposure time does not exceed the maximum
-            exposure_time_to_set = min(time, 5000)
+            exposure_time_to_set = time
             self.cam.ExposureTime.SetValue(exposure_time_to_set)
             print('Exposure time set to %s us...' % exposure_time_to_set)
         except PySpin.SpinnakerException as ex:
@@ -618,7 +618,7 @@ class Camera:
         return "Acquisition_%d" % index
 
 
-    '''def save_data(self,outputname,index=-1):
+    def save_data(self,outputname,index=-1):
         #  Save image
         #
         #  *** NOTES ***
@@ -630,7 +630,7 @@ class Camera:
         else:
             np.save(self.path+outputname,self.image[(index-1)%3][:][:])
         #self.image.Save(self.path + filename)
-        print('Data saved at %s' % (self.path + outputname + '.npy'))'''
+        print('Data saved at %s' % (self.path + outputname + '.npy'))
 
 
     def get_image(self,index=-1):
