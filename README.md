@@ -15,12 +15,17 @@ Run Run_in_Sequence_GUI.py to start acquiring absorption image with a GUI.
 
 Run Run_in_Sequence.py to start acquiring without GUI.
 
-If cannot setup camera after disconnecting the camera accidentally, try  Release_Camera.py
+Run_in_Seqence_GUI_debug.py will display the original image to make it more convenient to debug.
+
+If cannot setup camera after disconnecting the camera incorrectly, try Release_Camera.py
+
+If you use a different camera, remember to change the serial number in Camera.py. This program only works with camera with this serial number.
 
 ## Parameter Range for GUI
 Gain: 0 - 47.99 db
 
-Exposure Time: 0 - 5000 us
+Exposure Time: 0 - unlimited us 
+(It seems that the camera itself have a maximun exposure time inside. )
 
 Xmin, Xmax: 0 - 3072
 

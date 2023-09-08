@@ -188,13 +188,27 @@ class Camera:
 
             # # Select trigger delay
             # # Acquisition will start at a specified time after the trigger. Sync 
-            # if self.cam.TriggerDelay.GetAccessMode() != PySpin.RW:
-            #     print('Unable to set trigger delay (node retrieval). Aborting...')
-            #     return False
-
+            if self.cam.TriggerDelay.GetAccessMode() != PySpin.RW:
+                 print('Unable to set trigger delay (node retrieval). Aborting...')
+                 return False
             # #This value seems a bit inaccurate
-            # self.cam.TriggerDelay.SetValue(30)
-            # print('Trigger delay set to 30us...')
+            self.cam.TriggerDelay.SetValue(379)
+            print('Trigger delay set to 379us...')
+
+            # Set StreamBufferHandlingMode to Oldest First
+            # Retrieve Buffer Handling Mode Information
+            node_map=self.cam.GetTLStreamNodeMap()
+            handling_mode = PySpin.CEnumerationPtr(node_map.GetNode('StreamBufferHandlingMode'))
+            if not PySpin.IsReadable(handling_mode) or not PySpin.IsWritable(handling_mode):
+                print('Unable to set Buffer Handling mode (node retrieval). Aborting...\n')
+                return False
+            handling_mode_entry = PySpin.CEnumEntryPtr(handling_mode.GetCurrentEntry())
+            if not PySpin.IsReadable(handling_mode_entry):
+                print('Unable to set Buffer Handling mode (Entry retrieval). Aborting...\n')
+                return False
+            handling_mode_entry = handling_mode.GetEntryByName('OldestFirst')
+            handling_mode.SetIntValue(handling_mode_entry.GetValue())
+            print('Buffer Handling Mode set to %s' % handling_mode_entry.GetDisplayName())
 
             # Turn off automatic exposure mode
             #
