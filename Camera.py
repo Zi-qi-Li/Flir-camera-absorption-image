@@ -91,7 +91,10 @@ class Camera:
         
         del runningCam
 
+        
         cam_list.Clear()
+        if not self.init_camera():
+            raise Exception("Fail to init camera")
         print("Camera found")
         # Release system instance
         #self.system.ReleaseInstance()
@@ -126,6 +129,8 @@ class Camera:
             self.cam.Init()
         except PySpin.SpinnakerException as ex:
             print('Error: %s' % ex)
+            return False
+        return True
 
 
     def setup_camera(self):
@@ -536,45 +541,39 @@ class Camera:
 
 
     def start_acquisition(self):
-        print('\n*** IMAGE ACQUISITION START ***')
+        
+        
+        #  Begin acquiring images
+        #
+        #  *** NOTES ***
+        #  What happens when the camera begins acquiring images depends on the
+        #  acquisition mode. Single frame captures only a single image, multi
+        #  frame catures a set number of images, and continuous captures a
+        #  continuous stream of images. Because the example calls for the
+        #  retrieval of 10 images, continuous mode has been set.
+        #
+        #  *** LATER ***
+        #  Image acquisition must be ended when no more images are needed.
         try:
-            #  Begin acquiring images
-            #
-            #  *** NOTES ***
-            #  What happens when the camera begins acquiring images depends on the
-            #  acquisition mode. Single frame captures only a single image, multi
-            #  frame catures a set number of images, and continuous captures a
-            #  continuous stream of images. Because the example calls for the
-            #  retrieval of 10 images, continuous mode has been set.
-            #
-            #  *** LATER ***
-            #  Image acquisition must be ended when no more images are needed.
             self.cam.BeginAcquisition()
+            print('\n*** IMAGE ACQUISITION START ***')
 
             print('Acquiring images...')
-        
-        except PySpin.SpinnakerException as ex:
+        except Exception as ex:
             print('Error: %s' % ex)
-            return False
-        
-        return True
 
 
     def end_acquisition(self):
-            #  End acquisition
-            #
-            #  *** NOTES ***
-            #  Ending acquisition appropriately helps ensure that devices clean up
-            #  properly and do not need to be power-cycled to maintain integrity.
+        #  End acquisition
+        #
+        #  *** NOTES ***
+        #  Ending acquisition appropriately helps ensure that devices clean up
+        #  properly and do not need to be power-cycled to maintain integrity.
         try:
             self.cam.EndAcquisition()
             print('*** IMAGE ACQUISITION END ***\n')
-        except PySpin.SpinnakerException as ex:
-            print('Error: %s' % ex)
-            return False
-        
-        
-        return True
+        except:
+            pass
             
 
     def acquire_single_image(self):
@@ -620,7 +619,12 @@ class Camera:
                 image_result.Release()
 
         except PySpin.SpinnakerException as ex:
-            #print('Error: %s' % ex)
+            if ex.errorcode == -1011:
+                pass
+                #print('Did not get an image.')
+            else:
+                print('Error: %s' % ex)
+            
             return False
         
         return True

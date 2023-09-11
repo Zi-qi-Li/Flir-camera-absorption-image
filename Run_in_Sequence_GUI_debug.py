@@ -603,7 +603,7 @@ class MyWindow(QtWidgets.QMainWindow):
             if not self.camera.acquire_single_image():
                 return False
             end_time=time.time()
-            self.log.append('Aquisition time: %ss'%(end_time-start_time))
+            self.log.append('Transmission time: %ss'%(end_time-start_time))
             self.log.append('Aquire image %d successfully' % self.camera.image_cnt)
         except Exception as ex:
             #print('Error: %s' % ex)

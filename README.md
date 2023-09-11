@@ -11,13 +11,13 @@ Do not use pip install pyspin, this will install another lib.
 PyQt5 is needed to run with GUI.
 
 ## Start
-Run Run_in_Sequence_GUI.py to start acquiring absorption image with a GUI.
+Run Run_in_Sequence_GUI.py to start acquiring absorption image with a GUI. This program only saves original data. 
+
+Run_in_Seqence_GUI_debug.py will display the original image to make it more convenient to debug. This program saves the figure displayed but does not save original data.
 
 Run Run_in_Sequence.py to start acquiring without GUI.
 
-Run_in_Seqence_GUI_debug.py will display the original image to make it more convenient to debug.
-
-If cannot setup camera after disconnecting the camera incorrectly, try Release_Camera.py
+If cannot setup camera after disconnecting the camera incorrectly, try Release_Camera.py to reset camera.
 
 If you use a different camera, remember to change the serial number in Camera.py. This program only works with camera with this serial number.
 
@@ -25,7 +25,7 @@ If you use a different camera, remember to change the serial number in Camera.py
 Gain: 0 - 47.99 db
 
 Exposure Time: 0 - unlimited us 
-(It seems that the camera itself have a maximun exposure time inside. )
+(It seems that the camera itself has a maximun exposure time inside. )
 
 Xmin, Xmax: 0 - 3072
 
