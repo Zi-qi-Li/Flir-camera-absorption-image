@@ -5,12 +5,12 @@ import Camera
 def Release_camera():
     try:
         camera=Camera.Camera()
-        camera.init_camera()
+        #camera.init_camera()
         try:
             camera.start_acquisition()
             camera.end_acquisition()
-        except:
-            print('Error')
+        except Exception as ex:
+            print('Error: %s' % ex)
         camera.release_camera()
     except Exception as ex:
         print('Error: %s' % ex)

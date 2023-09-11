@@ -2,12 +2,12 @@ import numpy as np
 import Camera
 import DrawImage
 import Param
+import Release_Camera
 import sys
 import os
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore, QtWidgets
 import datetime
 import copy
-#import time
 
 MAX_X_PIXEL=3072
 MAX_Y_PIXEL=2048
@@ -23,25 +23,13 @@ class MyWindow(QtWidgets.QMainWindow):
 
         # Object to draw image
         self.plt_image=DrawImage.QMatplotlib()
-        #self.image=DrawImage.Plt_Result()
         
         # Object to acquire image
         self.timer=QtCore.QTimer()
 
         # Object to save params
         self.param=Param.Param()
-
         self.param.load_param(self.param.path+'Param.plk')
-        '''
-        # trigger mode is turned on in setup_camera()
-        if not self.camera.setup_camera():
-            self.close()
-
-        self.camera.set_gain(self.param.GAIN) # set gain to 10.6 db
-        #self.camera.auto_gain() # set gain to auto
-        self.camera.set_exposure_time(self.param.EXPOSURE) # set exposure time to 100 us
-        
-        self.camera.start_acquisition()'''
         
         # Init GUI
         self.init_UI()
@@ -310,26 +298,32 @@ class MyWindow(QtWidgets.QMainWindow):
         # start
         self.btn_start=QtWidgets.QPushButton("Start",self)
         self.btn_start.clicked.connect(self.start_acquisition)
-        self.btn_start.resize(200,50)
+        self.btn_start.resize(175,50)
         self.btn_start.move(1550,120)
 
         # end
         self.btn_end=QtWidgets.QPushButton("End",self)
         self.btn_end.clicked.connect(self.end_acquisition)
-        self.btn_end.resize(200,50)
-        self.btn_end.move(1800,120)
+        self.btn_end.resize(175,50)
+        self.btn_end.move(1750,120)
 
         # connect camera
         self.btn_connect=QtWidgets.QPushButton("Connect",self)
         self.btn_connect.clicked.connect(self.connect_camera)
-        self.btn_connect.resize(200,50)
+        self.btn_connect.resize(175,50)
         self.btn_connect.move(1550,50)
 
         # disconnect camera
         self.btn_disconnect=QtWidgets.QPushButton("Disconnect",self)
         self.btn_disconnect.clicked.connect(self.disconnect_camera)
-        self.btn_disconnect.resize(200,50)
-        self.btn_disconnect.move(1800,50)
+        self.btn_disconnect.resize(175,50)
+        self.btn_disconnect.move(1750,50)
+
+        # Refresh camera
+        self.btn_refresh=QtWidgets.QPushButton("Refresh",self)
+        self.btn_refresh.clicked.connect(self.refresh_camera)
+        self.btn_refresh.resize(150,50)
+        self.btn_refresh.move(1950,50)
 
         # select image and display
         self.btn_select=QtWidgets.QPushButton("Select",self)
@@ -574,6 +568,15 @@ class MyWindow(QtWidgets.QMainWindow):
             print('Fail to calculate OD: %s' % ex)
             self.log.append('Fail to calculate OD: %s' % ex)
             self.cal_result.setText('Fail to calculate OD')
+
+
+    def refresh_camera(self):
+        try:
+            self.disconnect_camera()
+        except:
+            pass
+        Release_Camera.Release_camera()
+        self.connect_camera()
 
 
     def closeEvent(self,event):

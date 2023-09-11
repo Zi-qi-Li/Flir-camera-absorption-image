@@ -2,7 +2,7 @@
 This is a program to acquire absorption image using Flir camera. It acquires image with atoms, image without atoms and background sequentially, and then calculate optical density.
 
 ## Preparation
-Firstly install Spinnaker SDK at <https://www.flir.com/products/spinnaker-sdk/>
+Firstly download Spinnaker SDK and Python Spinnaker SDK at <https://www.flir.com/products/spinnaker-sdk/> and read How_to_Install_PySpin.txt in this repository to install driver and PySpin.
 
 Make sure you can import PySpin after installation.
 
