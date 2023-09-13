@@ -62,7 +62,7 @@ class MyWindow(QtWidgets.QMainWindow):
             #self.btn_end.setDisabled(False)
 
         except Exception as ex:
-            print('Fail to connect camera: %s' % ex)
+            print('GUI: Fail to connect camera: %s' % ex)
             self.log.append('Fail to connect camera: %s' % ex)
             #self.info.setText('Fail to connect camera')
 
@@ -88,7 +88,7 @@ class MyWindow(QtWidgets.QMainWindow):
             self.camera_connected=False
             self.log.append('Camera disconnected')
         except Exception as ex:
-            print('Fail to disconnect camera: %s' % ex)
+            print('GUI: Fail to disconnect camera: %s' % ex)
             self.log.append('Fail to disconnect camera: %s' % ex)
 
 
@@ -96,14 +96,17 @@ class MyWindow(QtWidgets.QMainWindow):
         if not self.camera_connected:
             self.log.append('Connect camera first before start acquisition')
             #self.info.setText('Connect camera before start acquisition')
-            print('Connect camera first before start acquisition')
+            print('GUI: Connect camera first before start acquisition')
             return
         if self.acq_start:
             self.log.append('Camera already starts')
             #self.info.setText('Camera already starts')
-            print('Camera already starts')
+            print('GUI: Camera already starts')
             return
-        self.camera.start_acquisition()
+        if not self.camera.start_acquisition():
+            self.log.append('Fail to start camera')
+            print('GUI: Fail to start camera')
+            return
         self.timer.timeout.connect(self.aquire_image)
         self.acq_start=True
         self.btn_end.setDisabled(False)
@@ -124,7 +127,10 @@ class MyWindow(QtWidgets.QMainWindow):
             #self.info.setText('Camera already ends')
             #print('Camera already ends')
             return
-        self.timer.stop()
+        try:
+            self.timer.stop()
+        except:
+            pass
         self.camera.end_acquisition()
         self.acq_start=False
         self.btn_end.setDisabled(True)
@@ -431,7 +437,7 @@ class MyWindow(QtWidgets.QMainWindow):
         except:
             self.log.append('Fail to select image: %s'%ex)
             #self.info.setText('Fail to select image')
-            print('Fail to select image: %s'%ex)
+            print('GUI: Fail to select image: %s'%ex)
             return False
         return True
 
@@ -449,11 +455,12 @@ class MyWindow(QtWidgets.QMainWindow):
                 raise Exception('Wrong data type')
             self.od=tmp
             self.log.append('Load image successfully')
+            print('GUI: Load image successfully')
             self.display()
         except Exception as ex:
             self.log.append('Fail to load image: %s' % ex)
             #self.info.setText('Fail to load image')
-            print('Fail to load image: %s' % ex)
+            print('GUI: Fail to load image: %s' % ex)
             return False
         return True
 
@@ -496,12 +503,13 @@ class MyWindow(QtWidgets.QMainWindow):
 
             
             self.log.append('Display image successfully')
+            print('GUI: Display image successfully')
             #raise Exception('')
             
         except Exception as ex:
             self.log.append('Fail to display image: %s' % ex)
             #self.info.setText('Fail to display image')
-            print('Fail to display image: %s' % ex)
+            print('GUI: Fail to display image: %s' % ex)
             #print('Error: %s'%ex)
             return False
         return True
@@ -523,9 +531,10 @@ class MyWindow(QtWidgets.QMainWindow):
             np.save(filename,self.od)
             self.edit_filename.setText(filename)
             self.log.append('Image saved successfully')
+            print('GUI: Image saved successfully')
         except Exception as ex:
             self.log.append('Fail to save image: %s' % ex)
-            pass
+            print('GUI: Fail to save image: %s' % ex)
 
 
     def save_image_auto(self):
@@ -533,9 +542,10 @@ class MyWindow(QtWidgets.QMainWindow):
             np.save(self.edit_filename.text(),self.od)
             #self.edit_filename.setText(filename)
             self.log.append('Image saved successfully')
+            print('GUI: Image saved successfully')
         except Exception as ex:
             self.log.append('Fail to save image: %s' % ex)
-            pass
+            print('GUI: Fail to save image: %s' % ex)
 
 
     def calculate_od(self):
@@ -561,11 +571,12 @@ class MyWindow(QtWidgets.QMainWindow):
             tmp[np.isinf(tmp)]=0
             total_od=np.sum(tmp,dtype=np.float32)
             self.plt_image.plt_od_region(self.param.XMIN,self.param.XMAX,self.param.YMIN,self.param.YMAX)
+            print('GUI: Optical density: %s' % total_od)
             self.log.append('Optical density: %s' % total_od)
             self.cal_result.setText('Optical density: %s' % total_od)
             self.plt_image.draw()
         except Exception as ex:
-            print('Fail to calculate OD: %s' % ex)
+            print('GUI: Fail to calculate OD: %s' % ex)
             self.log.append('Fail to calculate OD: %s' % ex)
             self.cal_result.setText('Fail to calculate OD')
 
@@ -602,8 +613,9 @@ class MyWindow(QtWidgets.QMainWindow):
             self.log.append('Aquire image %d successfully' % self.camera.image_cnt)
         except Exception as ex:
             #print('Error: %s' % ex)
-            print('Fail to aquire image: %s' % ex)
+            print('GUI: Fail to aquire image: %s' % ex)
             self.log.append('Fail to aquire image: %s' % ex)
+            self.end_acquisition()
             return False
         if self.camera.image_cnt > 0 and self.camera.image_cnt % 3 == 0 :
             
@@ -635,7 +647,7 @@ class MyWindow(QtWidgets.QMainWindow):
                 pass
 
             except Exception as ex:
-                print('Fail to process data: %s' % ex)
+                print('GUI: Fail to process data: %s' % ex)
                 self.log.append('Fail to process data: %s' % ex)
                 #print('Error: %s' % ex)
                 return False
@@ -675,5 +687,5 @@ if __name__ == "__main__":
             app.camera.release_camera()
         except:
             pass'''
-        print('Error: %s' % ex)
+        print('GUI: Error: %s' % ex)
         

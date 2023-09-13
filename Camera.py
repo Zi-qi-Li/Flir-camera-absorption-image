@@ -561,6 +561,9 @@ class Camera:
             print('Acquiring images...')
         except Exception as ex:
             print('Error: %s' % ex)
+            return False
+
+        return True
 
 
     def end_acquisition(self):
@@ -573,7 +576,8 @@ class Camera:
             self.cam.EndAcquisition()
             print('*** IMAGE ACQUISITION END ***\n')
         except:
-            pass
+            return False
+        return True
             
 
     def acquire_single_image(self):
@@ -623,7 +627,7 @@ class Camera:
                 pass
                 #print('Did not get an image.')
             else:
-                print('Error: %s' % ex)
+                raise ex
             
             return False
         
