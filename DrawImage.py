@@ -125,7 +125,10 @@ class Plt_Result:
         pass
     
 class QMatplotlib(FigureCanvasQTAgg):
-    def __init__(self):
+    def __init__(self,window_magnification):
+        # Change the size of UI according to the resolution of screen
+        self.window_magnification=window_magnification
+        
         self.image=Figure(figsize=(15,10),dpi=100)
         super(QMatplotlib,self).__init__(self.image)
         
@@ -137,7 +140,7 @@ class QMatplotlib(FigureCanvasQTAgg):
         if nxsteps<=0:
             nxsteps = 1
 
-        nysteps = (ymax-ymin)//600
+        nysteps = (ymax-ymin)//int(600*self.window_magnification)
         if nysteps<=0:
             nysteps = 1
 

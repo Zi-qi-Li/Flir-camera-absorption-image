@@ -12,23 +12,30 @@ import copy
 MAX_X_PIXEL=3072
 MAX_Y_PIXEL=2048
 
+DESKTOP_DEFAULT_HEIGHT=1440
+DESKTOP_DEFAULT_WIDTH=2560
+
 class MyWindow(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self,window_magnification):
         super().__init__()
         
+        # Change the size of UI according to the resolution of screen
+        self.window_magnification=window_magnification
+
         # Bool object to check the status
         self.camera_connected=False
         self.acq_start=False
         self.image_displayed=False
 
         # Object to draw image
-        self.plt_image=DrawImage.QMatplotlib()
+        self.plt_image=DrawImage.QMatplotlib(self.window_magnification)
         
         # Object to acquire image
         self.timer=QtCore.QTimer()
 
         # Object to save params
         self.param=Param.Param()
+        # Try to load params in last run. If it is the first time to run, it will create a folder to store params.
         self.param.load_param(self.param.path+'Param.plk')
         
         # Init GUI
@@ -142,40 +149,41 @@ class MyWindow(QtWidgets.QMainWindow):
     def init_UI(self):
         # Setup window
         self.setWindowTitle("image")
-        self.setGeometry(100,100,2200,1150)  #(300,100,400,300)
+        self.setGeometry(int(100*self.window_magnification),int(100*self.window_magnification),
+                         int(2200*self.window_magnification),int(1150*self.window_magnification))  #(300,100,400,300)
 
         
         # This browser shows infomation of execution
         self.log=QtWidgets.QTextBrowser(self)
-        self.log.resize(600,300)
-        self.log.move(1520,820)
+        self.log.resize(int(600*self.window_magnification),int(300*self.window_magnification))
+        self.log.move(int(1520*self.window_magnification),int(820*self.window_magnification))
         
 
         # Label to display Image
         self.lbl=QtWidgets.QLabel("",self)
-        self.lbl.resize(1500,1000)
+        self.lbl.resize(int(1500*self.window_magnification),int(1000*self.window_magnification))
         self.lbl.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
         self.lbl.setScaledContents(True)
         #self.lbl.setText('Acquiring image...')
         #self.lbl.setFont(QtGui.QFont("Times", 12))
-        self.lbl.move(0,100)
+        self.lbl.move(int(0*self.window_magnification),int(100*self.window_magnification))
         self.hboxlayout = QtWidgets.QHBoxLayout(self.lbl)
         self.hboxlayout.addWidget(self.plt_image)
 
         # set Gain
         self.lb_gain=QtWidgets.QLabel("Gain (db):",self)
-        self.lb_gain.resize(150,50)
+        self.lb_gain.resize(int(150*self.window_magnification),int(50*self.window_magnification))
         self.lb_gain.setScaledContents(True)
-        self.lb_gain.move(1550,220)
+        self.lb_gain.move(int(1550*self.window_magnification),int(220*self.window_magnification))
 
         self.btn_gain=QtWidgets.QPushButton("set Gain",self)
         self.btn_gain.clicked.connect(self.set_gain)
-        self.btn_gain.resize(200,50)
-        self.btn_gain.move(1900,220)
+        self.btn_gain.resize(int(200*self.window_magnification),int(50*self.window_magnification))
+        self.btn_gain.move(int(1900*self.window_magnification),int(220*self.window_magnification))
         
         self.edit_Gain=QtWidgets.QLineEdit(self)
-        self.edit_Gain.resize(100,30)
-        self.edit_Gain.move(1750,230)
+        self.edit_Gain.resize(int(100*self.window_magnification),int(30*self.window_magnification))
+        self.edit_Gain.move(int(1750*self.window_magnification),int(230*self.window_magnification))
         self.edit_Gain.setText('%s' % self.param.GAIN)
 
         #self.lb_gain_info=QtWidgets.QLabel('',self)#("Set Gain to %s db" % self.param.GAIN,self)
@@ -185,18 +193,18 @@ class MyWindow(QtWidgets.QMainWindow):
 
         # set Exposure Time
         self.lb_exposure=QtWidgets.QLabel("Exposure (us):",self)
-        self.lb_exposure.resize(200,50)
+        self.lb_exposure.resize(int(200*self.window_magnification),int(50*self.window_magnification))
         self.lb_exposure.setScaledContents(True)
-        self.lb_exposure.move(1550,290)
+        self.lb_exposure.move(int(1550*self.window_magnification),int(290*self.window_magnification))
 
         self.btn_exposure=QtWidgets.QPushButton("set Exposure",self)
         self.btn_exposure.clicked.connect(self.set_exposure)
-        self.btn_exposure.resize(200,50)
-        self.btn_exposure.move(1900,290)
+        self.btn_exposure.resize(int(200*self.window_magnification),int(50*self.window_magnification))
+        self.btn_exposure.move(int(1900*self.window_magnification),int(290*self.window_magnification))
         
         self.edit_exposure=QtWidgets.QLineEdit(self)
-        self.edit_exposure.resize(100,30)
-        self.edit_exposure.move(1750,300)
+        self.edit_exposure.resize(int(100*self.window_magnification),int(30*self.window_magnification))
+        self.edit_exposure.move(int(1750*self.window_magnification),int(300*self.window_magnification))
         self.edit_exposure.setText('%s' % self.param.EXPOSURE)
 
         #self.lb_exposure_info=QtWidgets.QLabel('',self)#("Set Exposure Time to %s us" % self.param.EXPOSURE,self)
@@ -206,151 +214,151 @@ class MyWindow(QtWidgets.QMainWindow):
         
         # X Y for display
         self.lb_display_Xmin=QtWidgets.QLabel("Xmin:",self)
-        self.lb_display_Xmin.resize(170,30)
+        self.lb_display_Xmin.resize(int(170*self.window_magnification),int(30*self.window_magnification))
         self.lb_display_Xmin.setScaledContents(True)
-        self.lb_display_Xmin.move(1550,400)
+        self.lb_display_Xmin.move(int(1550*self.window_magnification),int(400*self.window_magnification))
         
         self.edit_display_Xmin=QtWidgets.QLineEdit(self)
         self.edit_display_Xmin.setText('%s' % self.param.DIS_XMIN)
-        self.edit_display_Xmin.resize(70,30)
-        self.edit_display_Xmin.move(1650,400)
+        self.edit_display_Xmin.resize(int(70*self.window_magnification),int(30*self.window_magnification))
+        self.edit_display_Xmin.move(int(1650*self.window_magnification),int(400*self.window_magnification))
         
         self.lb_display_Xmax=QtWidgets.QLabel("Xmax:",self)
-        self.lb_display_Xmax.resize(170,30)
+        self.lb_display_Xmax.resize(int(170*self.window_magnification),int(30*self.window_magnification))
         self.lb_display_Xmax.setScaledContents(True)
-        self.lb_display_Xmax.move(1800,400)
+        self.lb_display_Xmax.move(int(1800*self.window_magnification),int(400*self.window_magnification))
 
         self.edit_display_Xmax=QtWidgets.QLineEdit(self)
         self.edit_display_Xmax.setText('%s' % self.param.DIS_XMAX)
-        self.edit_display_Xmax.resize(70,30)
-        self.edit_display_Xmax.move(1900,400)
+        self.edit_display_Xmax.resize(int(70*self.window_magnification),int(30*self.window_magnification))
+        self.edit_display_Xmax.move(int(1900*self.window_magnification),int(400*self.window_magnification))
 
         self.lb_display_Ymin=QtWidgets.QLabel("Ymin:",self)
-        self.lb_display_Ymin.resize(170,30)
+        self.lb_display_Ymin.resize(int(170*self.window_magnification),int(30*self.window_magnification))
         self.lb_display_Ymin.setScaledContents(True)
-        self.lb_display_Ymin.move(1550,450)
+        self.lb_display_Ymin.move(int(1550*self.window_magnification),int(450*self.window_magnification))
 
         self.edit_display_Ymin=QtWidgets.QLineEdit(self)
         self.edit_display_Ymin.setText('%s' % self.param.DIS_YMIN)
-        self.edit_display_Ymin.resize(70,30)
-        self.edit_display_Ymin.move(1650,450)
+        self.edit_display_Ymin.resize(int(70*self.window_magnification),int(30*self.window_magnification))
+        self.edit_display_Ymin.move(int(1650*self.window_magnification),int(450*self.window_magnification))
         
         self.lb_display_Ymax=QtWidgets.QLabel("Ymax:",self)
-        self.lb_display_Ymax.resize(170,30)
+        self.lb_display_Ymax.resize(int(170*self.window_magnification),int(30*self.window_magnification))
         self.lb_display_Ymax.setScaledContents(True)
-        self.lb_display_Ymax.move(1800,450)
+        self.lb_display_Ymax.move(int(1800*self.window_magnification),int(450*self.window_magnification))
 
         self.edit_display_Ymax=QtWidgets.QLineEdit(self)
         self.edit_display_Ymax.setText('%s' % self.param.DIS_YMAX)
-        self.edit_display_Ymax.resize(70,30)
-        self.edit_display_Ymax.move(1900,450)
+        self.edit_display_Ymax.resize(int(70*self.window_magnification),int(30*self.window_magnification))
+        self.edit_display_Ymax.move(int(1900*self.window_magnification),int(450*self.window_magnification))
 
         self.btn_display=QtWidgets.QPushButton("Display",self)
         self.btn_display.clicked.connect(self.display)
-        self.btn_display.resize(450,50)
-        self.btn_display.move(1550,500)
+        self.btn_display.resize(int(450*self.window_magnification),int(50*self.window_magnification))
+        self.btn_display.move(int(1550*self.window_magnification),int(500*self.window_magnification))
 
         # X Y for calculate OD
         self.lb_Xmin=QtWidgets.QLabel("Xmin:",self)
-        self.lb_Xmin.resize(170,30)
+        self.lb_Xmin.resize(int(170*self.window_magnification),int(30*self.window_magnification))
         self.lb_Xmin.setScaledContents(True)
-        self.lb_Xmin.move(1550,600)
+        self.lb_Xmin.move(int(1550*self.window_magnification),int(600*self.window_magnification))
         
         self.edit_Xmin=QtWidgets.QLineEdit(self)
         self.edit_Xmin.setText('%s' % self.param.XMIN)
-        self.edit_Xmin.resize(70,30)
-        self.edit_Xmin.move(1650,600)
+        self.edit_Xmin.resize(int(70*self.window_magnification),int(30*self.window_magnification))
+        self.edit_Xmin.move(int(1650*self.window_magnification),int(600*self.window_magnification))
         
         self.lb_Xmax=QtWidgets.QLabel("Xmax:",self)
-        self.lb_Xmax.resize(170,30)
+        self.lb_Xmax.resize(int(170*self.window_magnification),int(30*self.window_magnification))
         self.lb_Xmax.setScaledContents(True)
-        self.lb_Xmax.move(1800,600)
+        self.lb_Xmax.move(int(1800*self.window_magnification),int(600*self.window_magnification))
 
         self.edit_Xmax=QtWidgets.QLineEdit(self)
         self.edit_Xmax.setText('%s' % self.param.XMAX)
-        self.edit_Xmax.resize(70,30)
-        self.edit_Xmax.move(1900,600)
+        self.edit_Xmax.resize(int(70*self.window_magnification),int(30*self.window_magnification))
+        self.edit_Xmax.move(int(1900*self.window_magnification),int(600*self.window_magnification))
 
         self.lb_Ymin=QtWidgets.QLabel("Ymin:",self)
-        self.lb_Ymin.resize(170,30)
+        self.lb_Ymin.resize(int(170*self.window_magnification),int(30*self.window_magnification))
         self.lb_Ymin.setScaledContents(True)
-        self.lb_Ymin.move(1550,650)
+        self.lb_Ymin.move(int(1550*self.window_magnification),int(650*self.window_magnification))
 
         self.edit_Ymin=QtWidgets.QLineEdit(self)
         self.edit_Ymin.setText('%s' % self.param.YMIN)
-        self.edit_Ymin.resize(70,30)
-        self.edit_Ymin.move(1650,650)
+        self.edit_Ymin.resize(int(70*self.window_magnification),int(30*self.window_magnification))
+        self.edit_Ymin.move(int(1650*self.window_magnification),int(650*self.window_magnification))
         
         self.lb_Ymax=QtWidgets.QLabel("Ymax:",self)
-        self.lb_Ymax.resize(170,30)
+        self.lb_Ymax.resize(int(170*self.window_magnification),int(30*self.window_magnification))
         self.lb_Ymax.setScaledContents(True)
-        self.lb_Ymax.move(1800,650)
+        self.lb_Ymax.move(int(1800*self.window_magnification),int(650*self.window_magnification))
 
         self.edit_Ymax=QtWidgets.QLineEdit(self)
         self.edit_Ymax.setText('%s' % self.param.YMAX)
-        self.edit_Ymax.resize(70,30)
-        self.edit_Ymax.move(1900,650)
+        self.edit_Ymax.resize(int(70*self.window_magnification),int(30*self.window_magnification))
+        self.edit_Ymax.move(int(1900*self.window_magnification),int(650*self.window_magnification))
 
         self.btn_cal=QtWidgets.QPushButton("Calculate OD",self)
         self.btn_cal.clicked.connect(self.calculate_od)
-        self.btn_cal.resize(450,50)
-        self.btn_cal.move(1550,700)
+        self.btn_cal.resize(int(450*self.window_magnification),int(50*self.window_magnification))
+        self.btn_cal.move(int(1550*self.window_magnification),int(700*self.window_magnification))
 
         self.cal_result=QtWidgets.QLabel("",self)
-        self.cal_result.resize(450,30)
+        self.cal_result.resize(int(450*self.window_magnification),int(30*self.window_magnification))
         self.cal_result.setScaledContents(True)
-        self.cal_result.move(1550,750)
+        self.cal_result.move(int(1550*self.window_magnification),int(750*self.window_magnification))
 
         # start
         self.btn_start=QtWidgets.QPushButton("Start",self)
         self.btn_start.clicked.connect(self.start_acquisition)
-        self.btn_start.resize(175,50)
-        self.btn_start.move(1550,120)
+        self.btn_start.resize(int(175*self.window_magnification),int(50*self.window_magnification))
+        self.btn_start.move(int(1550*self.window_magnification),int(120*self.window_magnification))
 
         # end
         self.btn_end=QtWidgets.QPushButton("End",self)
         self.btn_end.clicked.connect(self.end_acquisition)
-        self.btn_end.resize(175,50)
-        self.btn_end.move(1750,120)
+        self.btn_end.resize(int(175*self.window_magnification),int(50*self.window_magnification))
+        self.btn_end.move(int(1750*self.window_magnification),int(120*self.window_magnification))
 
         # connect camera
         self.btn_connect=QtWidgets.QPushButton("Connect",self)
         self.btn_connect.clicked.connect(self.connect_camera)
-        self.btn_connect.resize(175,50)
-        self.btn_connect.move(1550,50)
+        self.btn_connect.resize(int(175*self.window_magnification),int(50*self.window_magnification))
+        self.btn_connect.move(int(1550*self.window_magnification),int(50*self.window_magnification))
 
         # disconnect camera
         self.btn_disconnect=QtWidgets.QPushButton("Disconnect",self)
         self.btn_disconnect.clicked.connect(self.disconnect_camera)
-        self.btn_disconnect.resize(175,50)
-        self.btn_disconnect.move(1750,50)
+        self.btn_disconnect.resize(int(175*self.window_magnification),int(50*self.window_magnification))
+        self.btn_disconnect.move(int(1750*self.window_magnification),int(50*self.window_magnification))
 
         # Refresh camera
         self.btn_refresh=QtWidgets.QPushButton("Refresh",self)
         self.btn_refresh.clicked.connect(self.refresh_camera)
-        self.btn_refresh.resize(150,50)
-        self.btn_refresh.move(1950,50)
+        self.btn_refresh.resize(int(150*self.window_magnification),int(50*self.window_magnification))
+        self.btn_refresh.move(int(1950*self.window_magnification),int(50*self.window_magnification))
 
         # select image and display
         self.btn_select=QtWidgets.QPushButton("Select",self)
         self.btn_select.clicked.connect(self.select_image)
-        self.btn_select.resize(110,40)
-        self.btn_select.move(1200,45)
+        self.btn_select.resize(int(110*self.window_magnification),int(40*self.window_magnification))
+        self.btn_select.move(int(1200*self.window_magnification),int(45*self.window_magnification))
 
         self.edit_filename=QtWidgets.QLineEdit(self)
         self.edit_filename.setText(self.param.CURRENT_IMAGE_PATH)
-        self.edit_filename.resize(1000,30)
-        self.edit_filename.move(180,50)
+        self.edit_filename.resize(int(1000*self.window_magnification),int(30*self.window_magnification))
+        self.edit_filename.move(int(180*self.window_magnification),int(50*self.window_magnification))
 
         self.btn_load=QtWidgets.QPushButton("Load",self)
         self.btn_load.clicked.connect(self.load_image)
-        self.btn_load.resize(110,40)
-        self.btn_load.move(50,45)
+        self.btn_load.resize(int(110*self.window_magnification),int(40*self.window_magnification))
+        self.btn_load.move(int(50*self.window_magnification),int(45*self.window_magnification))
 
         self.btn_save=QtWidgets.QPushButton("Save",self)
         self.btn_save.clicked.connect(self.save_image)
-        self.btn_save.resize(110,40)
-        self.btn_save.move(1320,45)
+        self.btn_save.resize(int(110*self.window_magnification),int(40*self.window_magnification))
+        self.btn_save.move(int(1320*self.window_magnification),int(45*self.window_magnification))
         
 
         # disable all the btn except btn_connect
@@ -676,7 +684,14 @@ class MyWindow(QtWidgets.QMainWindow):
 if __name__ == "__main__":
     try:
         qapp = QtWidgets.QApplication(sys.argv)
-        app = MyWindow()
+
+        # Change the size of UI according to the resolution of screen
+        my_desktop=qapp.desktop()
+        desktop_height=my_desktop.height()
+        desktop_width=my_desktop.width()
+        window_magnification=min(desktop_height/DESKTOP_DEFAULT_HEIGHT,desktop_width/DESKTOP_DEFAULT_WIDTH)
+
+        app = MyWindow(window_magnification)
     
         app.show()
         app.activateWindow()
