@@ -346,7 +346,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.btn_select.move(int(1200*self.window_magnification),int(45*self.window_magnification))
 
         self.edit_filename=QtWidgets.QLineEdit(self)
-        self.edit_filename.setText(self.param.CURRENT_IMAGE_PATH)
+        self.edit_filename.setText(self.param.CURRENT_IMAGE_PATH+'/')
         self.edit_filename.resize(int(1000*self.window_magnification),int(30*self.window_magnification))
         self.edit_filename.move(int(180*self.window_magnification),int(50*self.window_magnification))
 

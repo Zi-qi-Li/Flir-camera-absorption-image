@@ -1,3 +1,5 @@
+# class to manage and control camera
+
 import os
 import PySpin
 import numpy as np

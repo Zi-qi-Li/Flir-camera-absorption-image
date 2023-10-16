@@ -1,3 +1,5 @@
+# Debug version, it displays original data to make it more convenient to debug with the experimental system.
+
 import numpy as np
 import Camera
 import DrawImage
@@ -22,7 +24,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.image_displayed=False
 
         # Object to draw image
-        self.plt_image=DrawImage.QMatplotlib()
+        self.plt_image=DrawImage.QMatplotlib(1)
         self.image=DrawImage.Plt_Result()
         
         # Object to acquire image

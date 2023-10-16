@@ -1,3 +1,5 @@
+# acquire image without GUI
+
 import numpy as np
 import Camera
 import DrawImage

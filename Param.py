@@ -1,3 +1,5 @@
+# class to save parameters and configurations in GUI
+
 import pickle
 import os
 

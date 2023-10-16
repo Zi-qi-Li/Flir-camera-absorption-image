@@ -4,3 +4,4 @@ param/
 __pycache__/
 *test*.py
 *.npy
+Image_Canvas.py

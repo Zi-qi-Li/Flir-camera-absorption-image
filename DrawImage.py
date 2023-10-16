@@ -1,3 +1,7 @@
+# This file contains functions and classes for drawing images. 
+# Some functions are only used in previous version.
+
+
 import numpy as np
 from PIL import Image 
 import sys
@@ -129,13 +133,34 @@ class QMatplotlib(FigureCanvasQTAgg):
         # Change the size of UI according to the resolution of screen
         self.window_magnification=window_magnification
         
-        self.image=Figure(figsize=(15,10),dpi=100)
+        self.image=Figure(figsize=((15*self.window_magnification),(10*self.window_magnification)),dpi=100)
         super(QMatplotlib,self).__init__(self.image)
+
+    '''    
+        self.image.canvas.draw_idle() 
+        self.image.canvas.mpl_connect('scroll_event', self.call_back)
+        self.image.canvas.mpl_connect('button_press_event', self.call_back)
         
+    def call_back(self,event):
+        try:
+            x_min, x_max = self.axes.get_xlim()
+            fanwei = (x_max - x_min) / 10
+            if event.button == 'up':
+                self.axes.set(xlim=(x_min + fanwei, x_max - fanwei))
+                #print('up')
+            elif event.button == 'down':
+                self.axes.set(xlim=(x_min - fanwei, x_max + fanwei))
+                #print('down')
+        except:
+            pass
+    '''
 
     def plt_image(self,od,xmin,xmax,ymin,ymax):
         self.image.clear()
+        #self.axes=self.image.add_axes([0.1,0.1,0.5,0.45])
         self.axes=self.image.add_subplot(111)
+        #self.axes.figure.set_figwidth(10)
+        #self.axes.spines[1].set_position()
         nxsteps = (xmax-xmin)//600 # Draw the figure every nsteps pixels. This makes it much faster.
         if nxsteps<=0:
             nxsteps = 1
